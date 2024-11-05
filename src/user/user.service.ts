@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -24,5 +24,11 @@ export class UserService {
     await user.save();
     user.password = undefined;
     return user;
+  }
+  async findByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({ email }).select('+password');
+  }
+  async getProfile(email: String) {
+    return await this.userModel.findOne({ email });
   }
 }

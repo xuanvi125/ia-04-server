@@ -3,12 +3,16 @@ import {
   Controller,
   Get,
   Post,
+  Req,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpDTO } from './dto/SignUpDTO';
-import { error } from 'console';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { User } from './schemas/user.schema';
+import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -28,6 +32,16 @@ export class UserController {
       statusCode: 201,
       message: 'User created successfully',
       data: user,
+    };
+  }
+  @Get('profile')
+  @UseGuards(AuthGuard)
+  async getProfile(@Req() request: Request) {
+    const user = request['user'];
+    const profile = await this.userService.getProfile(user.sub);
+    return {
+      statusCode: 200,
+      user: profile,
     };
   }
 }
